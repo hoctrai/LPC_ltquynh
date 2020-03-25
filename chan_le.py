@@ -10,48 +10,52 @@ import pandas as pd
 import numpy as np
 import array as arr
 class temp:
-    a0 = []
-    #df_tmp = pd.DataFrame()
-    a1 = []
-    a2 = []
-    X = []
-    #d = []
-    #e = []
+    a = []
+    df_tmp = pd.DataFrame()
+    b = []
+    c = []
+    d = []
+    e = []
     
     def __init__(self):
         print("")
     def readFile(self):
+        X = pd.ExcelFile('data.xlsx')
+        type(X)
         self.X = pd.ExcelFile('data.xlsx')
-        #type(X)
+        sheet = input('input for sheet: ')
+        if sheet != '':
+            df_tmp = pd.read_excel(self.X, sheet)
+        else:
+            for sheet in X.sheet_names:
+                df_tmp = X.parse(sheet)
+
+        coldata = np.size(df_tmp,1)
+        for i in range(0,coldata-1):
+            self.a = self.a + (df_tmp['Th'+str(i+1)].values.tolist())    
+        self.a = [k for k in self.a if (str(k) != 'nan')]
+        self.a = [int(k) for k in self.a]
         
-    
-    
     def getQueue(self):
-        a0 = pd.read_excel(self.X, '2017')
-        a1 = pd.read_excel(self.X, '2018')
-        a2 = pd.read_excel(self.X, '2019')
+        for i in range(len(self.a)-1):
+            if self.a[i]%2 == 0:
+                self.b.append(self.a[i+1])
         
-        coldata0 = np.size(a0, 1)
-        coldata1 = np.size(a1, 1)
-        coldata2 = np.size(a2, 1)
-        
-        
-        for i in range(0,coldata0-1):
-                self.a0 = self.a0 + (a0['Th'+str(i+1)].values.tolist())
+        for i in range(len(self.a)-1):
+            if self.a[i]%2 == 1:
+                self.c.append(self.a[i+1])
                 
-        for i in range(0,coldata1-1):
-                self.a1 = self.a1 + (a1['Th'+str(i+1)].values.tolist())
+        for i in range(len(self.a)-1):
+            if self.a[i] < 50:
+                self.d.append(self.a[i+1])
                 
-        for i in range(0,coldata2-1):
-                self.a2 = self.a2 + (a2['Th'+str(i+1)].values.tolist())
+        for i in range(len(self.a)-1):
+            if self.a[i] >= 50:
+                self.e.append(self.a[i+1])
                 
-        self.a0 = [k for k in self.a0 if (str(k) != 'nan')]
-        self.a1 = [k for k in self.a1 if (str(k) != 'nan')]
-        self.a2 = [k for k in self.a2 if (str(k) != 'nan')]
-        
-    def getCondition(self, a):
-        run.readFile()
-        run.getQueue()
+    def getCondition(self):
+        # run.readFile()
+        self.getQueue()
         i = 0
         queue = []
         e = []
@@ -69,21 +73,21 @@ class temp:
         n = int(input('input1: '))
         m = int(input('input2: '))
         ngay = int(input('input ngay: '))
-        while i < len(a)-1:
+        while i < len(self.a)-1:
             if len(queue) < ngay:
-                queue.append(a[i])
+                queue.append(self.a[i])
                 #print(queue)
             else:
                 del queue[0]
-                queue.append(a[i])
+                queue.append(self.a[i])
                 #print(queue)
             
             if Y == 0:
-                self.updown(i, m, n, queue, upup, upupdown, ngay, a)
+                self.updown(i, m, n, queue, upup, upupdown, ngay, self.a)
             if Y == 1:
-                self.evenodd(i, m, n, queue, e, eo, ngay, a)                
+                self.evenodd(i, m, n, queue, e, eo, ngay, self.a)                
             if Y == 2:
-                self.cutNdayupdown(i, n, queue, f, g, ngay, a)
+                self.cutNdayupdown(i, n, queue, f, g, ngay, self.a)
             if Y == 3:
                 self.cutNdayevenodd(i, n, queue, f, g, ngay, a)
             i = i + 1
@@ -221,25 +225,16 @@ class temp:
         else:
             return 0
 
-
-    
-        
-    
-    
-    
     def display(self):
-        run.getQueue()
+        # run.getQueue()
         
         #print(self.a2)
         #run.evenodd()
-        run.getCondition(self.a0)
-        run.getCondition(self.a1)
-        run.getCondition(self.a2)
+        self.getCondition()
         #a = del self.a
         #print(a)
         
         
 run = temp()
 run.readFile()
-
 run.display()
